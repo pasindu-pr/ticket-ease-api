@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Serilog;
 using TicketEase.Contracts;
 using TicketEase.Dtos;
 using TicketEase.Entities;
@@ -8,7 +9,7 @@ namespace TicketEase.Services
     public class UserService : IUserService
     {
         private IMapper _mapper;
-        public IRepository<User> _repository;
+        private IRepository<User> _repository;
 
         public UserService(IMapper mapper, IRepository<User> repository)
         {
@@ -25,6 +26,7 @@ namespace TicketEase.Services
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message);
                 throw new Exception(ex.Message);
             }
         }

@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.ApplicationInsights.Extensibility;
+using MongoDB.Driver;
+using Serilog;
 using TicketEase.Contracts;
 using TicketEase.Repositories;
 using TicketEase.Services;
@@ -21,6 +23,10 @@ namespace TicketEase.Configs
             });
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.ApplicationInsights(TelemetryConfiguration.Active, TelemetryConverter.Traces).CreateLogger();
         }
     }
 }
