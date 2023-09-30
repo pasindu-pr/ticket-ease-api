@@ -13,6 +13,7 @@ namespace TicketEase.Configs
         public static void InjectServices(IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITrainService, TrainService>();
 
             services.AddSingleton(serviceProvider =>
             {
