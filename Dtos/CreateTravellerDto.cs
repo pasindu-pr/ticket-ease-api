@@ -2,7 +2,7 @@
 
 namespace TicketEase.Dtos
 {
-    public class CreateUserDto
+    public class CreateTravellerDto
     {
         [Required]
         public string FirstName { get; set; } = string.Empty;
@@ -13,6 +13,8 @@ namespace TicketEase.Dtos
         public string Email { get; set; } = string.Empty;
         [Required]
         public string Password { get; set; } = string.Empty;
-        public BackOfficeUserAndTravelAgentTypes UserType { get; set; }
+        [Required]
+        [RegularExpression(@"([0-9]{9}[x|X|v|V]|[0-9]{12})$", ErrorMessage = "Invalid NIC Number")]
+        public string NicNumber { get; set; } = string.Empty;
     }
 }

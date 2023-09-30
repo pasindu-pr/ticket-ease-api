@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketEase.Contracts;
 using TicketEase.Dtos;
+using TicketEase.Responses;
 
 namespace TicketEase.Controllers
 {
@@ -16,15 +17,43 @@ namespace TicketEase.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> CreateUserAccount(CreateUserDto userDto)
+        public async Task<ActionResult<ApiResponse>> CreateUserAccount(CreateUserDto userDto)
         {
-            if (userDto == null)
+            if (!ModelState.IsValid || userDto == null)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            await _userService.CreateUserAccount(userDto);
-            return Ok();
+            ApiResponse response = await _userService.CreateUserAccount(userDto);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("register/traveller")]
+        public async Task<ActionResult<ApiResponse>> CreateTravellerAccount(CreateTravellerDto userDto)
+        {
+            if (!ModelState.IsValid || userDto == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _userService.CreateTravellerAccount(userDto);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
         }
     }
 }

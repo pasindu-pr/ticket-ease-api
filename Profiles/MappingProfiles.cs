@@ -9,6 +9,7 @@ namespace TicketEase.Profiles
         public MappingProfiles()
         {
             CreateMap<CreateUserDto, User>().ReverseMap();
+            CreateMap<CreateTravellerDto, User>().ReverseMap();
         }
     }
 }

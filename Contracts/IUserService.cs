@@ -1,10 +1,11 @@
 ﻿using TicketEase.Dtos;
-using TicketEase.Entities;
+using TicketEase.Responses;
 
 namespace TicketEase.Contracts
 {
     public interface IUserService
     {
-        public Task CreateUserAccount(CreateUserDto userDto);
+        public Task<ApiResponse> CreateUserAccount(CreateUserDto userDto);
+        public Task<ApiResponse> CreateTravellerAccount(CreateTravellerDto userDto);
     }
 }
