@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TicketEase.Dtos
+namespace TicketEase.Dtos.Users
 {
     public class CreateTravellerDto
     {

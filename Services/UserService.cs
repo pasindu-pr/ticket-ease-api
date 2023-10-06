@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Serilog;
 using TicketEase.Contracts;
-using TicketEase.Dtos;
+using TicketEase.Dtos.Users;
 using TicketEase.Entities;
 using TicketEase.Responses;
 

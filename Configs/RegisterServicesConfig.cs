@@ -14,6 +14,8 @@ namespace TicketEase.Configs
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITrainService, TrainService>();
+            services.AddScoped<IStationService, StationService>();
+            services.AddScoped<IScheduleService, ScheduleService>();
 
             services.AddSingleton(serviceProvider =>
             {

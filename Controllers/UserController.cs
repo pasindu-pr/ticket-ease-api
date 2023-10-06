@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketEase.Contracts;
-using TicketEase.Dtos;
+using TicketEase.Dtos.Users;
 using TicketEase.Responses;
 
 namespace TicketEase.Controllers

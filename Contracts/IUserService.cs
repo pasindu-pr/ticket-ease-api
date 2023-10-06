@@ -1,4 +1,4 @@
-﻿using TicketEase.Dtos;
+﻿using TicketEase.Dtos.Users;
 using TicketEase.Responses;
 
 namespace TicketEase.Contracts
