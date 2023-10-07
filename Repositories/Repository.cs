@@ -27,9 +27,9 @@ namespace TicketEase.Repositories
             await dbCollection.DeleteOneAsync(filterBuilder.Eq("Id", id));
         }
 
-        public async Task<T> FilterAsync(System.Linq.Expressions.Expression<Func<T, bool>> filter)
+        public async Task<IReadOnlyCollection<T>> FilterAsync(FilterDefinition<T> filter)
         {
-            return await dbCollection.Find(filter).FirstOrDefaultAsync();
+            return await dbCollection.Find(filter).ToListAsync();
         }
 
         public async Task<IReadOnlyCollection<T>> GetAllAsync()

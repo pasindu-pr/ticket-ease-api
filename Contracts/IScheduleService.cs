@@ -10,5 +10,7 @@ namespace TicketEase.Contracts
         public Task<ApiResponse> AddScheduleAsync(CreateScheduleDto schedule);
         public Task<ApiResponse> UpdateScheduleAsync(string id, UpdateScheduleDto schedule);
         public Task<ApiResponse> DeleteScheduleAsync(string id);
+        public Task<ApiResponse> AddTrainToSchedule(AddTrainToScheduleDto trainToScheduleDto);
+        public Task<ApiResponse> AddStationsToSchedule(AddStationsToScheduleDto stationsToScheduleDto);
     }
 }

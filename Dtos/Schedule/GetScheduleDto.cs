@@ -1,4 +1,6 @@
-﻿using TicketEase.Entities;
+﻿using MongoDB.Driver;
+using TicketEase.Dtos.Trains;
+using TicketEase.Entities;
 
 namespace TicketEase.Dtos.Schedule
 {
@@ -10,6 +12,7 @@ namespace TicketEase.Dtos.Schedule
         public string Destination { get; set; } = string.Empty;
         public string DepartureTime { get; set; } = string.Empty;
         public string ArrivalTime { get; set; } = string.Empty;
+        public CreateTrainDto Train { get; set; } = new();
         public List<TicketEase.Entities.Station> stations { get; set; } = new();
     }
 }

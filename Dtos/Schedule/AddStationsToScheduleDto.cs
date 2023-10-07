@@ -2,7 +2,7 @@
 {
     public class AddStationsToScheduleDto
     {
-        public int ScheduleId { get; set; }
-        public List<string> StationIds { get; set; } = new();
+        public string ScheduleId { get; set; } = string.Empty;
+        public List<string> Stations { get; set; } = new();
     }
 }

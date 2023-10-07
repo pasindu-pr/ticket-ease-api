@@ -1,7 +1,10 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using Serilog;
 using TicketEase.Contracts;
+using TicketEase.Entities;
 using TicketEase.Repositories;
 using TicketEase.Services;
 using TicketEase.Settings;
@@ -23,7 +26,7 @@ namespace TicketEase.Configs
                 var dbSettings = configuration.GetSection(nameof(DatabaseSettings)).Get<DatabaseSettings>();
                 MongoClient mongoClient = new MongoClient(dbSettings.ConnectionString);
                 return mongoClient.GetDatabase(dbSettings.DatabaseName);
-            });
+            }); 
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

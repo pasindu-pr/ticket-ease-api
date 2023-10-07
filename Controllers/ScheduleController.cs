@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TicketEase.Contracts;
 using TicketEase.Dtos.Schedule;
-using TicketEase.Dtos.Station;
 using TicketEase.Responses;
-using TicketEase.Services;
 
 namespace TicketEase.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/schedules")]
     [ApiController]
     public class ScheduleController : ControllerBase
     {
@@ -56,6 +54,46 @@ namespace TicketEase.Controllers
             }
 
             ApiResponse response = await _service.AddScheduleAsync(scheduleDto);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("add-stations")]
+        public async Task<ActionResult<ApiResponse>> AddStationToSchedule(AddStationsToScheduleDto stationsToScheduleDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _service.AddStationsToSchedule(stationsToScheduleDto);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("add-train")]
+        public async Task<ActionResult<ApiResponse>> AddTrainToSchedule(AddTrainToScheduleDto trainToScheduleDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _service.AddTrainToSchedule(trainToScheduleDto);
 
             if (response.Success)
             {

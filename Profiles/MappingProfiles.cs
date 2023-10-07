@@ -17,6 +17,7 @@ namespace TicketEase.Profiles
             CreateMap<GetTrainDto, Train>().ReverseMap();
             CreateMap<UpdateTrainDto, Train>().ReverseMap();
             CreateMap<CreateStationDto, Station>().ReverseMap();
+            CreateMap<GetStationDto, Station>().ReverseMap();
             CreateMap<UpdateStationDto, Station>().ReverseMap();
             CreateMap<CreateScheduleDto, Schedule>().ReverseMap();
             CreateMap<UpdateScheduleDto, Schedule>().ReverseMap();

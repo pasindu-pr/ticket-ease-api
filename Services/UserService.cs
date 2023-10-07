@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MongoDB.Driver;
 using Serilog;
 using TicketEase.Contracts;
 using TicketEase.Dtos.Users;
@@ -24,9 +25,11 @@ namespace TicketEase.Services
             try
             {
                 User user = _mapper.Map<User>(userDto);
-                User isDuplicatedNic = await _repository.FilterAsync(a => a.NicNumber == user.NicNumber);
+                var filterDefinition = new FilterDefinitionBuilder<User>();
+                var filter = filterDefinition.Eq(u => u.NicNumber, user.NicNumber);
+                IReadOnlyCollection<User> filteredUsers = await _repository.FilterAsync(filter);
 
-                if (isDuplicatedNic == null)
+                if (filteredUsers.Count == 0)
                 {
                     await _repository.CreateAsync(user);
                     apiResponse.Success = true;
