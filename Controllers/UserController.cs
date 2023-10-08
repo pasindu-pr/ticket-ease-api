@@ -55,5 +55,25 @@ namespace TicketEase.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<ApiResponse>> Login(LoginUserDto userDto)
+        {
+            if (!ModelState.IsValid || userDto == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _userService.LoginAsync(userDto);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
     }
 }

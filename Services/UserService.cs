@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Serilog;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using TicketEase.Contracts;
 using TicketEase.Dtos.Users;
 using TicketEase.Entities;
 using TicketEase.Responses;
+using BCr = BCrypt.Net;
 
 namespace TicketEase.Services
 {
@@ -12,11 +17,23 @@ namespace TicketEase.Services
     {
         private IMapper _mapper;
         private IRepository<User> _repository;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IMapper mapper, IRepository<User> repository)
+        public UserService(IMapper mapper, IRepository<User> repository, IConfiguration configuration)
         {
             _mapper = mapper;
             _repository = repository;
+            _configuration = configuration;
+        }
+
+        public Task<ApiResponse> AddUserToAdminRole(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApiResponse> AddUserToSellerRole(string userId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ApiResponse> CreateTravellerAccount(CreateTravellerDto userDto)
@@ -31,6 +48,8 @@ namespace TicketEase.Services
 
                 if (filteredUsers.Count == 0)
                 {
+                    string passwordHash = BCr.BCrypt.HashPassword(userDto.Password);
+                    user.Password = passwordHash;
                     await _repository.CreateAsync(user);
                     apiResponse.Success = true;
                     apiResponse.Message = "Account Created Successfully!";
@@ -67,6 +86,81 @@ namespace TicketEase.Services
                 throw new Exception(ex.Message);
             }
             return apiResponse;
+        }
+
+        public async Task<ApiResponse> LoginAsync(LoginUserDto userLoginDto)
+        {
+            try
+            {
+                ApiResponse response = new();
+                FilterDefinitionBuilder<User> Fdb = new FilterDefinitionBuilder<User>();
+                FilterDefinition<User> filterDefinition = Fdb.Eq(u => u.Email, userLoginDto.Email);
+                IReadOnlyCollection<User> users = await _repository.FilterAsync(filterDefinition);
+
+                if (users.Count > 0)
+                {
+                    User user = users.FirstOrDefault()!;
+                    var isVerified = BCr.BCrypt.Verify(userLoginDto.Password, user.Password);
+
+                    if (isVerified)
+                    {
+                        var token = CreateToken(user);
+                        response.Data = token;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Success = false;
+                        response.Message = "Email or Password is invalid";
+                    }
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Email or Password is invalid";
+                }
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public Task<ApiResponse> SeedRolesAndUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ValidateToken(string token)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim> {
+                new Claim(type: "UserId", user.Id!),
+                new Claim(type: "Role", user.UserType.ToString()),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("Auth:SecurityKey").Value!));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(1),
+                    signingCredentials: creds
+                );
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
     }
 }

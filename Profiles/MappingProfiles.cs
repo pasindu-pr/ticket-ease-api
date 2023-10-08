@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using TicketEase.Dtos.Reservation;
 using TicketEase.Dtos.Schedule;
 using TicketEase.Dtos.Station;
 using TicketEase.Dtos.Trains;
@@ -22,6 +23,7 @@ namespace TicketEase.Profiles
             CreateMap<CreateScheduleDto, Schedule>().ReverseMap();
             CreateMap<UpdateScheduleDto, Schedule>().ReverseMap();
             CreateMap<GetScheduleDto, Schedule>().ReverseMap();
+            CreateMap<CreateReservationDto, Reservation>().ReverseMap();
         }
     }
 }
