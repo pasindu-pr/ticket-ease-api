@@ -5,7 +5,7 @@ using TicketEase.Responses;
 
 namespace TicketEase.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
