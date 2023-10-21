@@ -18,12 +18,14 @@ namespace TicketEase.Services
         private IMapper _mapper;
         private IRepository<User> _repository;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IMapper mapper, IRepository<User> repository, IConfiguration configuration)
+        public UserService(IMapper mapper, IRepository<User> repository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _repository = repository;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task<ApiResponse> AddUserToAdminRole(string userId)
@@ -161,6 +163,25 @@ namespace TicketEase.Services
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
+        }
+
+        public async Task<ApiResponse> DeactivateAccout()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.Identities.First().Claims.First().Value;
+
+            User user = await _repository.GetByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.IsActivated = false;
+                await _repository.UpdateAsync(userId, user);
+                return new ApiResponse { Success = true, Message = "Account deactivated successfully!" };
+            }
+            else
+            {
+                return new ApiResponse { Success = false, Message = "Account deactivation failed!" };
+            }
+
         }
     }
 }

@@ -9,5 +9,6 @@ namespace TicketEase.Contracts
         public Task<ApiResponse> CreateTravellerAccount(CreateTravellerDto userDto);
         public Task<ApiResponse> LoginAsync(LoginUserDto userLoginDto);
         public bool ValidateToken(string token);
+        public Task<ApiResponse> DeactivateAccout();
     }
 }

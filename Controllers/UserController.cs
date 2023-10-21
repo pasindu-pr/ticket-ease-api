@@ -75,5 +75,20 @@ namespace TicketEase.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpPost("deactivate")]
+        public async Task<ActionResult<ApiResponse>> DeativateAccount()
+        {
+            ApiResponse response = await _userService.DeactivateAccout();
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
     }
 }
