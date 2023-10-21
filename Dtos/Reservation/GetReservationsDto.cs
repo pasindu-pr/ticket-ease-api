@@ -2,13 +2,12 @@
 
 namespace TicketEase.Dtos.Reservation
 {
-    public class CreateReservationDto
+    public class GetReservationsDto
     {
-        [Required]
+        public string Id { get; set; } = null!;
+        public string UserId { get; set; } = null!;
         public string ScheduleId { get; set; } = null!;
-        [Required]
         public string FromStationId { get; set; } = null!;
-        [Required]
         public string ToStationId { get; set; } = null!;
         public DateTime Date { get; set; } = DateTime.Now;
         public int PassengerCount { get; set; } = 0;

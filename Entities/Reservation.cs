@@ -7,5 +7,6 @@
         public double Price { get; set; } = 0;
         public string ToStationId { get; set; } = null!;
         public string FromStationId { get; set; } = null!;
+        public int PassengerCount { get; set; }
     }
 }
