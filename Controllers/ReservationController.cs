@@ -56,6 +56,26 @@ namespace TicketEase.Controllers
             }
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<ApiResponse>> GetAllReservation()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _service.GetAllReservationsAsync();
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> CreateReservation(CreateReservationDto createReservation)
         {

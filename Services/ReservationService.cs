@@ -166,5 +166,30 @@ namespace TicketEase.Services
 
             return response;
         }
+
+        public async Task<ApiResponse> GetAllReservationsAsync()
+        {
+            ApiResponse response = new ApiResponse();
+
+            IReadOnlyCollection<Reservation> reservations = await _repository.GetAllAsync();
+
+            IReadOnlyCollection<GetAdminReservationsDto> reservationDtos =
+                reservations.Select(r => new GetAdminReservationsDto
+                {
+                    Id = r.Id,
+                    ScheduleId = r.ScheduleId.Name,
+                    FromStationId = r.FromStationId.Name,
+                    ToStationId = r.ToStationId.Name,
+                    PassengerCount = r.PassengerCount,
+                    Date = r.Date.ToString("dd/MM/yyyy"),
+                    UserId = r.UserId,
+                    Price = r.Price,
+                    IsCancelled = r.IsCancelled
+                }).ToList();
+
+            response.Success = true;
+            response.Data = reservationDtos;
+            return response;
+        }
     }
 }
