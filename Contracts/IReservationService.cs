@@ -8,5 +8,6 @@ namespace TicketEase.Contracts
         public Task<ApiResponse> CreateReservation(CreateReservationDto createReservation);
         public Task<ApiResponse> GetReservations();
         public Task<ApiResponse> DeleteReservation(string reservationId);
+        public Task<ApiResponse> GetCancelledReservations();
     }
 }

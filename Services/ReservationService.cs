@@ -4,6 +4,7 @@ using TicketEase.Contracts;
 using TicketEase.Dtos.Reservation;
 using TicketEase.Entities;
 using TicketEase.Responses;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace TicketEase.Services
 {
@@ -35,7 +36,7 @@ namespace TicketEase.Services
 
 
             FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
-            var filter = filterDef.Eq(doc => doc.UserId, userId);
+            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, false);
 
             IReadOnlyCollection<Reservation> reservations = await _repository.FilterAsync(filter);
             response.Data = _mapper.Map<IReadOnlyCollection<GetReservationsDto>>(reservations);
@@ -72,6 +73,22 @@ namespace TicketEase.Services
             return apiResponse;
         }
 
+        public async Task<ApiResponse> GetCancelledReservations()
+        {
+            ApiResponse response = new ApiResponse();
+
+            var userId = _httpContextAccessor.HttpContext.User.Identities.First().Claims.First().Value;
+
+            FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
+            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, true);
+
+            IReadOnlyCollection<Reservation> reservations = await _repository.FilterAsync(filter);
+            response.Data = _mapper.Map<IReadOnlyCollection<GetReservationsDto>>(reservations);
+            response.Success = true;
+
+            return response;
+        }
+
         public async Task<ApiResponse> DeleteReservation(string reservationId)
         {
             ApiResponse response = new ApiResponse();
@@ -79,9 +96,10 @@ namespace TicketEase.Services
             var userId = _httpContextAccessor.HttpContext.User.Identities.First().Claims.First().Value;
 
 
-            await _repository.DeleteAsync(reservationId);
-            response.Success = true;
+            Reservation reservation = await _repository.GetByIdAsync(reservationId);
+            reservation.IsCancelled = true;
 
+            response.Success = true;
             return response;
         }
     }

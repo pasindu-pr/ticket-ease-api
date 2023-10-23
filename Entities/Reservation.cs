@@ -8,5 +8,6 @@
         public string ToStationId { get; set; } = null!;
         public string FromStationId { get; set; } = null!;
         public int PassengerCount { get; set; }
+        public bool IsCancelled { get; set; } = false;
     }
 }

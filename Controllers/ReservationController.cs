@@ -36,6 +36,26 @@ namespace TicketEase.Controllers
             }
         }
 
+        [HttpGet("cancelled")]
+        public async Task<ActionResult<ApiResponse>> GetCancelledReservation()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ApiResponse response = await _service.GetCancelledReservations();
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> CreateReservation(CreateReservationDto createReservation)
         {
