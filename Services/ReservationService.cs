@@ -48,7 +48,7 @@ namespace TicketEase.Services
                     FromStationId = r.FromStationId.Name,
                     ToStationId = r.ToStationId.Name,
                     PassengerCount = r.PassengerCount,
-                    Date = r.CreatedAt,
+                    Date = r.Date,
                     UserId = r.UserId
                 }).ToList();
 
@@ -77,6 +77,7 @@ namespace TicketEase.Services
             reservation.FromStationId = fromStation;
             reservation.ToStationId = toStation;
             reservation.PassengerCount = createReservation.PassengerCount;
+            reservation.Date = createReservation.Date;
 
             await _repository.CreateAsync(reservation);
 
@@ -93,7 +94,7 @@ namespace TicketEase.Services
             var userId = _httpContextAccessor.HttpContext.User.Identities.First().Claims.First().Value;
 
             FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
-            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, true); 
+            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, true);
 
             IReadOnlyCollection<Reservation> reservations = await _repository.FilterAsync(filter);
 
@@ -122,12 +123,25 @@ namespace TicketEase.Services
 
 
             Reservation reservation = await _repository.GetByIdAsync(reservationId);
-            reservation.IsCancelled = true;
 
-            await _repository.UpdateAsync(reservation.Id, reservation);
 
-            response.Success = true;
-            response.Message = "Reservation Cancelled!";
+            var noOfDaysToReservation = (reservation.Date - DateTime.Now).Days;
+
+
+            if (noOfDaysToReservation < 5)
+            {
+                response.Success = true;
+                response.Message = "Reservation cannot be cancelled before 5 days!";
+            }
+            else
+            {
+                reservation.IsCancelled = true;
+                await _repository.UpdateAsync(reservation.Id, reservation);
+
+                response.Success = true;
+                response.Message = "Reservation Cancelled!";
+            }
+
             return response;
         }
     }
