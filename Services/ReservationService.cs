@@ -39,7 +39,20 @@ namespace TicketEase.Services
             var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, false);
 
             IReadOnlyCollection<Reservation> reservations = await _repository.FilterAsync(filter);
-            response.Data = _mapper.Map<IReadOnlyCollection<GetReservationsDto>>(reservations);
+
+            IReadOnlyCollection<GetReservationsDto> reservationDtos =
+                reservations.Select(r => new GetReservationsDto
+                {
+                    Id = r.Id,
+                    ScheduleId = r.ScheduleId.Name,
+                    FromStationId = r.FromStationId.Name,
+                    ToStationId = r.ToStationId.Name,
+                    PassengerCount = r.PassengerCount,
+                    Date = r.CreatedAt,
+                    UserId = r.UserId
+                }).ToList();
+
+            response.Data = reservationDtos;
             response.Success = true;
 
             return response;
@@ -58,11 +71,11 @@ namespace TicketEase.Services
 
             Reservation reservation = new();
 
-            reservation.ScheduleId = scheudle.Id;
+            reservation.ScheduleId = scheudle;
             reservation.UserId = userId;
             reservation.Price = 10;
-            reservation.FromStationId = fromStation.Id;
-            reservation.ToStationId = toStation.Id;
+            reservation.FromStationId = fromStation;
+            reservation.ToStationId = toStation;
             reservation.PassengerCount = createReservation.PassengerCount;
 
             await _repository.CreateAsync(reservation);
@@ -80,12 +93,24 @@ namespace TicketEase.Services
             var userId = _httpContextAccessor.HttpContext.User.Identities.First().Claims.First().Value;
 
             FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
-            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, true);
+            var filter = filterDef.Eq(doc => doc.UserId, userId) & filterDef.Eq(doc => doc.IsCancelled, true); 
 
             IReadOnlyCollection<Reservation> reservations = await _repository.FilterAsync(filter);
-            response.Data = _mapper.Map<IReadOnlyCollection<GetReservationsDto>>(reservations);
-            response.Success = true;
 
+            IReadOnlyCollection<GetReservationsDto> reservationDtos =
+                reservations.Select(r => new GetReservationsDto
+                {
+                    Id = r.Id,
+                    ScheduleId = r.ScheduleId.Name,
+                    FromStationId = r.FromStationId.Name,
+                    ToStationId = r.ToStationId.Name,
+                    PassengerCount = r.PassengerCount,
+                    Date = r.CreatedAt,
+                    UserId = r.UserId
+                }).ToList();
+
+            response.Success = true;
+            response.Data = reservationDtos;
             return response;
         }
 
@@ -99,7 +124,10 @@ namespace TicketEase.Services
             Reservation reservation = await _repository.GetByIdAsync(reservationId);
             reservation.IsCancelled = true;
 
+            await _repository.UpdateAsync(reservation.Id, reservation);
+
             response.Success = true;
+            response.Message = "Reservation Cancelled!";
             return response;
         }
     }
