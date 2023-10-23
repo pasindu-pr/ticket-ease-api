@@ -70,6 +70,10 @@ namespace TicketEase.Controllers
             {
                 return Ok(response);
             }
+            else if (!response.Success && response.Message == "Account is not activated")
+            {
+                return Unauthorized(response);
+            }
             else
             {
                 return BadRequest(response);

@@ -123,9 +123,18 @@ namespace TicketEase.Services
 
                     if (isVerified)
                     {
-                        var token = CreateToken(user);
-                        response.Data = token;
-                        response.Success = true;
+
+                        if (!user.IsActivated)
+                        {
+                            response.Success = false;
+                            response.Message = "Your account is not activated!";
+                        }
+                        else
+                        {
+                            var token = CreateToken(user);
+                            response.Data = token;
+                            response.Success = true;
+                        }
                     }
                     else
                     {
