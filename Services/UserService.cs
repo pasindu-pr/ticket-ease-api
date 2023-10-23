@@ -78,16 +78,33 @@ namespace TicketEase.Services
             try
             {
                 User user = _mapper.Map<User>(userDto);
-                await _repository.CreateAsync(user);
-                apiResponse.Success = true;
-                apiResponse.Message = "Account created successfully!";
+                var filterDefinition = new FilterDefinitionBuilder<User>();
+                var filter = filterDefinition.Eq(u => u.Email, userDto.Email);
+                IReadOnlyCollection<User> filteredUsers = await _repository.FilterAsync(filter);
+
+                if (filteredUsers.Count == 0)
+                {
+                    string passwordHash = BCr.BCrypt.HashPassword(userDto.Password);
+                    user.Password = passwordHash;
+                    user.IsActivated = true;
+                    await _repository.CreateAsync(user);
+                    apiResponse.Success = true;
+                    apiResponse.Message = "Account Created Successfully!";
+                    Log.Information($"User account created. UserName: {user.FirstName}");
+                }
+                else
+                {
+                    apiResponse.Success = false;
+                    apiResponse.Message = "User has already registered!";
+                    Log.Error($"Traveller account creation failed. Duplicated Email! UserName: {user.FirstName}");
+                }
+                return apiResponse;
             }
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
                 throw new Exception(ex.Message);
             }
-            return apiResponse;
         }
 
         public async Task<ApiResponse> LoginAsync(LoginUserDto userLoginDto)
