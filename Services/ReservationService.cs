@@ -47,8 +47,9 @@ namespace TicketEase.Services
                     FromStationId = r.FromStationId.Name,
                     ToStationId = r.ToStationId.Name,
                     PassengerCount = r.PassengerCount,
-                    Date = r.Date,
-                    UserId = r.UserId
+                    Date = r.Date.ToString("dd/MM/yyyy"),
+                    UserId = r.UserId,
+                    Price = r.Price
                 }).ToList();
 
             response.Data = reservationDtos;
@@ -68,14 +69,19 @@ namespace TicketEase.Services
             var fromStation = await _stationRepository.GetByIdAsync(fromStationId);
             var toStation = await _stationRepository.GetByIdAsync(toStationId);
 
+            var fromStationIndex = scheudle.Stations.FindIndex(s => s.Id == fromStationId);
+            var toStationIndex = scheudle.Stations.FindIndex(s => s.Id == toStationId);
+
+            int price = scheudle.Stations.Skip(fromStationIndex).Take(toStationIndex).ToList().Count * 10 * createReservation.PassengerCount;
+
             FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
             var filter = filterDef.Lt(doc => doc.Date, DateTime.Now.AddDays(30))
                 & filterDef.Eq(doc => doc.UserId, userId);
 
             IReadOnlyCollection<Reservation> currentReservations = await _repository.FilterAsync(filter);
-            
 
-            if(currentReservations.Count > 4)
+
+            if (currentReservations.Count > 4)
             {
                 ApiResponse apiResponse1 = new();
                 apiResponse1.Success = false;
@@ -88,7 +94,7 @@ namespace TicketEase.Services
 
             reservation.ScheduleId = scheudle;
             reservation.UserId = userId;
-            reservation.Price = 10;
+            reservation.Price = price;
             reservation.FromStationId = fromStation;
             reservation.ToStationId = toStation;
             reservation.PassengerCount = createReservation.PassengerCount;
@@ -121,8 +127,9 @@ namespace TicketEase.Services
                     FromStationId = r.FromStationId.Name,
                     ToStationId = r.ToStationId.Name,
                     PassengerCount = r.PassengerCount,
-                    Date = r.CreatedAt,
-                    UserId = r.UserId
+                    Date = r.Date.ToString("dd/MM/yyyy"),
+                    UserId = r.UserId,
+                    Price = r.Price
                 }).ToList();
 
             response.Success = true;
