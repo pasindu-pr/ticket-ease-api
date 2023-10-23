@@ -4,7 +4,6 @@ using TicketEase.Contracts;
 using TicketEase.Dtos.Reservation;
 using TicketEase.Entities;
 using TicketEase.Responses;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace TicketEase.Services
 {
@@ -68,6 +67,22 @@ namespace TicketEase.Services
             var scheudle = await _scheduleRepository.GetByIdAsync(scheduleId);
             var fromStation = await _stationRepository.GetByIdAsync(fromStationId);
             var toStation = await _stationRepository.GetByIdAsync(toStationId);
+
+            FilterDefinitionBuilder<Reservation> filterDef = new FilterDefinitionBuilder<Reservation>();
+            var filter = filterDef.Lt(doc => doc.Date, DateTime.Now.AddDays(30))
+                & filterDef.Eq(doc => doc.UserId, userId);
+
+            IReadOnlyCollection<Reservation> currentReservations = await _repository.FilterAsync(filter);
+            
+
+            if(currentReservations.Count > 4)
+            {
+                ApiResponse apiResponse1 = new();
+                apiResponse1.Success = false;
+                apiResponse1.Message = "4 reservations already exists. You can't place more!";
+                return apiResponse1;
+            }
+
 
             Reservation reservation = new();
 
