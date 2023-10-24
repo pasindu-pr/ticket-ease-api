@@ -16,6 +16,21 @@ namespace TicketEase.Controllers
             _userService = userService;
         }
 
+        [HttpGet("travellers")]
+        public async Task<ActionResult<ApiResponse>> GetAllTravellers()
+        {
+            ApiResponse response = await _userService.GetAllTravellers();
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<ApiResponse>> CreateUserAccount(CreateUserDto userDto)
         {
@@ -84,6 +99,21 @@ namespace TicketEase.Controllers
         public async Task<ActionResult<ApiResponse>> DeativateAccount()
         {
             ApiResponse response = await _userService.DeactivateAccout();
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("activate")]
+        public async Task<ActionResult<ApiResponse>> ActivateAccount(ActivateUserAccountDto user)
+        {
+            ApiResponse response = await _userService.ActivateAccount(user);
 
             if (response.Success)
             {

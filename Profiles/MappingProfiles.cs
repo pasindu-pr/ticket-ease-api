@@ -25,6 +25,7 @@ namespace TicketEase.Profiles
             CreateMap<GetScheduleDto, Schedule>().ReverseMap();
             CreateMap<CreateReservationDto, Reservation>().ReverseMap();
             CreateMap<GetReservationsDto, Reservation>().ReverseMap();
+            CreateMap<User, GetTravellersDto>();
         }
     }
 }

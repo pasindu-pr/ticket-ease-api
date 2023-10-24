@@ -209,5 +209,47 @@ namespace TicketEase.Services
             }
 
         }
+
+        public async Task<ApiResponse> ActivateAccount(ActivateUserAccountDto userToActivate)
+        {
+            var userId = userToActivate.UserId;
+            User user = await _repository.GetByIdAsync(userId);
+
+            if (user.IsActivated)
+            {
+                return new ApiResponse { Success = false, Message = "Account already activated!" };
+            }
+
+            if (user != null)
+            {
+                user.IsActivated = true;
+                await _repository.UpdateAsync(userId, user);
+                return new ApiResponse { Success = true, Message = "Account activated successfully!" };
+            }
+            else
+            {
+                return new ApiResponse { Success = false, Message = "Account activation failed!" };
+            }
+
+        }
+
+        public async Task<ApiResponse> GetAllTravellers()
+        {
+            try
+            {
+                ApiResponse response = new();
+                FilterDefinitionBuilder<User> Fdb = new FilterDefinitionBuilder<User>();
+                FilterDefinition<User> filterDefinition = Fdb.Eq(u => u.UserType, UserTypes.Traveller);
+                IReadOnlyCollection<User> users = await _repository.FilterAsync(filterDefinition);
+                response.Data = _mapper.Map<IReadOnlyCollection<GetTravellersDto>>(users);
+                response.Success = true;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
