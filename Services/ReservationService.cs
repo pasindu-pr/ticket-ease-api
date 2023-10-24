@@ -152,7 +152,7 @@ namespace TicketEase.Services
 
             if (noOfDaysToReservation < 5)
             {
-                response.Success = true;
+                response.Success = false;
                 response.Message = "Reservation cannot be cancelled before 5 days!";
             }
             else
